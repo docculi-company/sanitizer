@@ -17,6 +17,8 @@ func CleanMap(m map[string]interface{}, blacklist []string) map[string]interface
 		if !HasString(blacklist, key) {
 			if reflect.TypeOf(value).String() == "string" {
 				n[key] = Clean(fmt.Sprintf("%v", value))
+			} else {
+				n[key] = value
 			}
 		}
 	}
