@@ -1,8 +1,39 @@
 package sanitizer
 
 import (
+	"fmt"
+	"reflect"
 	"strings"
 )
+
+////
+//
+// Sanitize a map
+//
+////
+func CleanMap(m *map[string]interface{}, blacklist []string) {
+	for key, value := range *m {
+		if !HasString(blacklist, key) {
+			if reflect.TypeOf(value).String() == "string" {
+				value = Clean(fmt.Sprintf("%v", value))
+			}
+		}
+	}
+}
+
+////
+//
+// Find out if an array contains an element
+//
+////
+func HasString(ar []string, s string) bool {
+	for _, value := range ar {
+		if value == s {
+			return true
+		}
+	}
+	return false
+}
 
 ////
 //
@@ -11,12 +42,15 @@ import (
 ////
 func Clean(s string) string {
 	if s != "" {
+		// Allowed so that they are NOT self-cleaned
+		//s = strings.ReplaceAll(s, "&", "&amp;")
+		//s = strings.ReplaceAll(s, ";", "&semi;")
+		//
 		s = strings.ReplaceAll(s, "!", "&excl;")
 		s = strings.ReplaceAll(s, "\"", "&quot;")
 		s = strings.ReplaceAll(s, "#", "&num;")
 		s = strings.ReplaceAll(s, "$", "&dollar;")
 		s = strings.ReplaceAll(s, "%", "&percnt;")
-		s = strings.ReplaceAll(s, "&", "&amp;")
 		s = strings.ReplaceAll(s, "'", "&apos;")
 		s = strings.ReplaceAll(s, "(", "&lpar;")
 		s = strings.ReplaceAll(s, ")", "&rpar;")
@@ -27,7 +61,6 @@ func Clean(s string) string {
 		s = strings.ReplaceAll(s, ".", "&period;")
 		s = strings.ReplaceAll(s, "/", "&sol;")
 		s = strings.ReplaceAll(s, ":", "&colon;")
-		s = strings.ReplaceAll(s, ";", "&semi;")
 		s = strings.ReplaceAll(s, "<", "&lt;")
 		s = strings.ReplaceAll(s, "=", "&equals;")
 		s = strings.ReplaceAll(s, ">", "&gt;")
@@ -60,7 +93,6 @@ func Dirty(s string) string {
 		s = strings.ReplaceAll(s, "&num;", "#")
 		s = strings.ReplaceAll(s, "&dollar;", "$")
 		s = strings.ReplaceAll(s, "&percnt;", "%")
-		s = strings.ReplaceAll(s, "&amp;", "&")
 		s = strings.ReplaceAll(s, "&apos;", "'")
 		s = strings.ReplaceAll(s, "&lpar;", "(")
 		s = strings.ReplaceAll(s, "&rpar;", ")")
@@ -71,7 +103,6 @@ func Dirty(s string) string {
 		s = strings.ReplaceAll(s, "&period;", ".")
 		s = strings.ReplaceAll(s, "&sol;", "/")
 		s = strings.ReplaceAll(s, "&colon;", ":")
-		s = strings.ReplaceAll(s, "&semi;", ";")
 		s = strings.ReplaceAll(s, "&lt;", "<")
 		s = strings.ReplaceAll(s, "&equals;", "=")
 		s = strings.ReplaceAll(s, "&gt;", ">")
@@ -88,6 +119,9 @@ func Dirty(s string) string {
 		s = strings.ReplaceAll(s, "&rcub;", "}")
 		s = strings.ReplaceAll(s, "&tilde;", "~")
 		//s = strings.ReplaceAll(s, "--", "")
+		// Allowed so that they are NOT self-duplicated
+		//s = strings.ReplaceAll(s, "&semi;", ";")
+		//s = strings.ReplaceAll(s, "&amp;", "&")
 	}
 	return s
 }
