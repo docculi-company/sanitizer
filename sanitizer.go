@@ -6,26 +6,28 @@ import (
 	"strings"
 )
 
-////
+//
 //
 // Sanitize a map
 //
-////
-func CleanMap(m *map[string]interface{}, blacklist []string) {
-	for key, value := range *m {
+//
+func CleanMap(m map[string]interface{}, blacklist []string) map[string]interface{} {
+	var n = make(map[string]interface{})
+	for key, value := range m {
 		if !HasString(blacklist, key) {
 			if reflect.TypeOf(value).String() == "string" {
-				value = Clean(fmt.Sprintf("%v", value))
+				n[key] = Clean(fmt.Sprintf("%v", value))
 			}
 		}
 	}
+	return n
 }
 
-////
+//
 //
 // Find out if an array contains an element
 //
-////
+//
 func HasString(ar []string, s string) bool {
 	for _, value := range ar {
 		if value == s {
@@ -35,11 +37,11 @@ func HasString(ar []string, s string) bool {
 	return false
 }
 
-////
+//
 //
 // Sanitize a string
 //
-////
+//
 func Clean(s string) string {
 	if s != "" {
 		// Allowed so that they are NOT self-cleaned
@@ -81,11 +83,11 @@ func Clean(s string) string {
 	return s
 }
 
-////
+//
 //
 // Unsanitize a string
 //
-////
+//
 func Dirty(s string) string {
 	if s != "" {
 		s = strings.ReplaceAll(s, "&excl;", "!")
