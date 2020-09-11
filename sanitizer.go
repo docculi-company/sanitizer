@@ -11,12 +11,16 @@ import (
 // Sanitize a map
 //
 //
-func CleanMap(m map[string]interface{}, blacklist []string) map[string]interface{} {
+func FixMap(shouldFix bool, m map[string]interface{}, blacklist []string) map[string]interface{} {
 	var n = make(map[string]interface{})
 	for key, value := range m {
 		if (reflect.TypeOf(value).String() == "string") &&
 			!HasString(blacklist, key) {
-			n[key] = Clean(fmt.Sprintf("%v", value))
+			if shouldFix {
+				n[key] = Clean(fmt.Sprintf("%v", value))
+			} else {
+				n[key] = Dirty(fmt.Sprintf("%v", value))
+			}
 		} else {
 			// Every element must be copied, even if it's blacklisted and/or not a string
 			n[key] = value
